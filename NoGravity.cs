@@ -18,14 +18,14 @@ namespace NoGravity
             harmony.PatchAll(typeof(NoGravity));
 
             MethodInfo SpawnMethod = typeof(SlimeController).GetMethod("Spawn", BindingFlags.Instance | BindingFlags.NonPublic);
-            harmony.Patch(SpawnMethod, postfix: new HarmonyMethod(typeof(NoGravity).GetMethod("SpawnPatch", BindingFlags.Static | BindingFlags.Public)));
+            harmony.Patch(SpawnMethod, postfix: new HarmonyMethod(typeof(NoGravity).GetMethod(nameof(SpawnPatch), BindingFlags.Static | BindingFlags.Public)));
 
 
             MethodInfo IntegrateBodyMethod = typeof(DetPhysics).GetMethod("IntegrateBody", BindingFlags.Instance | BindingFlags.NonPublic);
-            harmony.Patch(IntegrateBodyMethod, prefix: new HarmonyMethod(typeof(NoGravity).GetMethod("DetPhysicsGravityPatch", BindingFlags.Static | BindingFlags.Public)));
+            harmony.Patch(IntegrateBodyMethod, prefix: new HarmonyMethod(typeof(NoGravity).GetMethod(nameof(DetPhysicsGravityPatch), BindingFlags.Static | BindingFlags.Public)));
 
             MethodInfo GravityForceMethod = typeof(BlackHole).GetMethod("GravityForce", BindingFlags.Instance | BindingFlags.NonPublic);
-            harmony.Patch(GravityForceMethod, postfix: new HarmonyMethod(typeof(NoGravity).GetMethod("BlackHolePatch", BindingFlags.Static | BindingFlags.Public)));
+            harmony.Patch(GravityForceMethod, postfix: new HarmonyMethod(typeof(NoGravity).GetMethod(nameof(BlackHolePatch), BindingFlags.Static | BindingFlags.Public)));
         }
 
         [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.UpdateSim))]
