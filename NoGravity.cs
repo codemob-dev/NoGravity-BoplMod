@@ -23,9 +23,6 @@ namespace NoGravity
 
             MethodInfo IntegrateBodyMethod = typeof(DetPhysics).GetMethod("IntegrateBody", BindingFlags.Instance | BindingFlags.NonPublic);
             harmony.Patch(IntegrateBodyMethod, prefix: new HarmonyMethod(typeof(NoGravity).GetMethod(nameof(DetPhysicsGravityPatch), BindingFlags.Static | BindingFlags.Public)));
-
-            MethodInfo GravityForceMethod = typeof(BlackHole).GetMethod("GravityForce", BindingFlags.Instance | BindingFlags.NonPublic);
-            harmony.Patch(GravityForceMethod, postfix: new HarmonyMethod(typeof(NoGravity).GetMethod(nameof(BlackHolePatch), BindingFlags.Static | BindingFlags.Public)));
         }
 
         [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.UpdateSim))]
@@ -110,28 +107,6 @@ namespace NoGravity
         public static void DetPhysicsGravityPatch(ref PhysicsBody body)
         {
             body.gravityScale = Fix.Zero;
-        }
-
-        public static void BlackHolePatch(ref BlackHole __instance, ref Fix __result, ref FixTransform fixTrans)
-        {
-            PlayerBody player = fixTrans.GetComponent<PlayerBody>();
-            Boulder boulder = fixTrans.GetComponent<Boulder>();
-            if (boulder != null)
-            {
-                __result *= (Fix)2;
-            }
-            else if (player != null)
-            {
-                __result *= (Fix)15;
-            }
-
-            FieldInfo dCircleField = typeof(BlackHole).GetField("dCircle", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            DPhysicsCircle dCircle = dCircleField.GetValue(__instance) as DPhysicsCircle;
-
-
-            Vec2 distanceVector = dCircle.position - fixTrans.position;
-            __result *= Vec2.SqrMagnitude(distanceVector) * (Fix)0.002;
         }
 
         [HarmonyPatch(typeof(Drill), nameof(Drill.UpdateSim))]
